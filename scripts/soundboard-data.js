@@ -141,7 +141,10 @@ export async function seekLibrarySound(playlistId, soundId, offsetSeconds) {
   if (!game.user.isGM) return;
   const { sound } = findPlaylistSound(playlistId, soundId);
   if (!sound?.sound) return;
-  await sound.sound.play({ offset: offsetSeconds, loop: sound.repeat, volume: sound.volume });
+
+  const live = sound.sound;
+  if (live.playing) await live.stop();
+  await live.play({ offset: offsetSeconds, loop: sound.repeat, volume: sound.volume });
 }
 
 /** Fire a one-off SFX that isn't backed by any Playlist document. */
