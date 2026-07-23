@@ -1,0 +1,21 @@
+{
+  "id": "simple-soundboard",
+  "title": "simple-soundboard",
+  "description": "Tag your existing Playlist sounds and trigger them from a one-click button grid, with named scene presets to recall a saved mix.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "14"
+  },
+  "url": "https://github.com/ProjectT4C/simple-soundboard",
+  "manifest": "https://raw.githubusercontent.com/ProjectT4C/simple-soundboard/refs/heads/main/module.json",
+  "download": "https://github.com/ProjectT4C/simple-soundboard/archive/refs/tags/V0.1-Public.zip",
+  "authors": [
+    {
+      "name": "ProjectT4C"
+    }
+  ],
+  "esmodules": ["scripts/main.js"],
+  "styles": ["styles/soundboard.css"],
+  "templates": ["templates/soundboard.hbs"]
+}

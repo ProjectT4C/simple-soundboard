@@ -1,0 +1,58 @@
+<div class="simple-soundboard">
+  <div class="soundboard-tags">
+    <button type="button" class="tag-chip {{#unless activeFilter}}active{{/unless}}" data-action="filterTag" data-tag="">All</button>
+    {{#each tags as |tag|}}
+      <button type="button" class="tag-chip {{#if (eq tag ../activeFilter)}}active{{/if}}" data-action="filterTag" data-tag="{{tag}}">{{tag}}</button>
+    {{/each}}
+  </div>
+
+  <div class="soundboard-grid">
+    {{#each sounds as |s|}}
+      <div class="soundboard-cell">
+        <button type="button"
+                class="soundboard-btn {{#if s.loop}}loop{{else}}oneshot{{/if}} {{#if s.playing}}playing{{/if}}"
+                data-action="triggerSound"
+                data-playlist-id="{{s.playlistId}}"
+                data-sound-id="{{s.soundId}}">
+          {{s.name}}
+        </button>
+        {{#if ../isGM}}
+          <a class="edit-tags" data-action="editTags" data-playlist-id="{{s.playlistId}}" data-sound-id="{{s.soundId}}" title="Edit tags">
+            <i class="fas fa-pencil"></i>
+          </a>
+        {{/if}}
+      </div>
+    {{/each}}
+
+    {{#each quickSounds as |q|}}
+      <div class="soundboard-cell">
+        <button type="button" class="soundboard-btn quick" data-action="triggerQuick" data-quick-id="{{q.id}}">
+          {{q.label}}
+        </button>
+        {{#if ../isGM}}
+          <a class="edit-tags" data-action="editTags" data-quick-id="{{q.id}}" title="Edit tags">
+            <i class="fas fa-pencil"></i>
+          </a>
+          <a class="delete-quick" data-action="deleteQuickSound" data-quick-id="{{q.id}}" title="Delete quick sound">
+            <i class="fas fa-trash"></i>
+          </a>
+        {{/if}}
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if isGM}}
+    <div class="soundboard-footer">
+      <button type="button" data-action="addQuickSound"><i class="fas fa-plus"></i> Quick Sound</button>
+
+      <select id="soundboard-preset-select">
+        {{#each presets as |name|}}
+          <option value="{{name}}">{{name}}</option>
+        {{/each}}
+      </select>
+      <button type="button" data-action="savePreset">Save Preset</button>
+      <button type="button" class="preset-recall" data-action="recallPreset">Recall</button>
+      <button type="button" class="preset-delete" data-action="deletePreset">Delete</button>
+    </div>
+  {{/if}}
+</div>
