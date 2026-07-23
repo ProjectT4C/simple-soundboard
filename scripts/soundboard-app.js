@@ -19,6 +19,8 @@ import {
   triggerQuickSound,
   stopLibrarySound,
   stopAllSounds,
+  seekLibrarySound,
+  formatTime,
   tagLibrarySound,
   tagQuickSound,
   upsertQuickSound,
@@ -58,6 +60,69 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
   constructor(options = {}) {
     super(options);
     this._filter = null;
+    this._pollTimer = null;
+  }
+
+  /** After every render, (re)wire the scrub bars and make sure the live-progress poller is running. */
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+    this._wireScrubBars();
+    if (!this._pollTimer) {
+      this._pollTimer = setInterval(() => this._updatePlaybackUI(), 500);
+    }
+  }
+
+  /** Stop the poller when the window closes so it doesn't run forever in the background. */
+  _onClose(options) {
+    super._onClose(options);
+    if (this._pollTimer) {
+      clearInterval(this._pollTimer);
+      this._pollTimer = null;
+    }
+  }
+
+  /** Attach drag/release listeners to each scrub bar currently in the DOM. */
+  _wireScrubBars() {
+    for (const bar of this.element.querySelectorAll(".scrub-bar")) {
+      bar.addEventListener("input", () => {
+        bar.dataset.seeking = "true";
+        const label = bar.closest(".now-playing-item")?.querySelector(".now-playing-time");
+        if (label) label.textContent = `${formatTime(Number(bar.value))} / ${formatTime(Number(bar.max))}`;
+      });
+
+      bar.addEventListener("change", async () => {
+        const { playlistId, soundId } = bar.dataset;
+        await seekLibrarySound(playlistId, soundId, Number(bar.value));
+        bar.dataset.seeking = "false";
+      });
+    }
+  }
+
+  /**
+   * Runs on a timer (not a full re-render) so dragging a scrub bar or hovering
+   * a button isn't interrupted every half second. Reads live playback position
+   * straight from Foundry's Sound objects and updates the DOM directly.
+   */
+  _updatePlaybackUI() {
+    if (!this.rendered) return;
+
+    for (const bar of this.element.querySelectorAll(".scrub-bar")) {
+      if (bar.dataset.seeking === "true") continue;
+
+      const { playlistId, soundId } = bar.dataset;
+      const { sound } = findPlaylistSound(playlistId, soundId);
+      const live = sound?.sound;
+      if (!live) continue;
+
+      const currentTime = live.currentTime ?? 0;
+      const duration = live.duration ?? 0;
+
+      bar.max = duration;
+      bar.value = currentTime;
+
+      const label = bar.closest(".now-playing-item")?.querySelector(".now-playing-time");
+      if (label) label.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+    }
   }
 
   async _prepareContext() {

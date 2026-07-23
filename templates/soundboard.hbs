@@ -13,8 +13,9 @@
                 class="soundboard-btn {{#if s.loop}}loop{{else}}oneshot{{/if}} {{#if s.playing}}playing{{/if}}"
                 data-action="triggerSound"
                 data-playlist-id="{{s.playlistId}}"
-                data-sound-id="{{s.soundId}}">
-          {{s.name}}
+                data-sound-id="{{s.soundId}}"
+                title="{{s.name}}">
+          <span class="soundboard-btn-label">{{s.name}}</span>
         </button>
         {{#if ../isGM}}
           <a class="edit-tags" data-action="editTags" data-playlist-id="{{s.playlistId}}" data-sound-id="{{s.soundId}}" title="Edit tags">
@@ -26,8 +27,8 @@
 
     {{#each quickSounds as |q|}}
       <div class="soundboard-cell">
-        <button type="button" class="soundboard-btn quick" data-action="triggerQuick" data-quick-id="{{q.id}}">
-          {{q.label}}
+        <button type="button" class="soundboard-btn quick" data-action="triggerQuick" data-quick-id="{{q.id}}" title="{{q.label}}">
+          <span class="soundboard-btn-label">{{q.label}}</span>
         </button>
         {{#if ../isGM}}
           <a class="edit-tags" data-action="editTags" data-quick-id="{{q.id}}" title="Edit tags">
@@ -51,14 +52,26 @@
       </div>
       <ul>
         {{#each playing as |p|}}
-          <li>
-            <span class="now-playing-name">{{p.name}}</span>
-            <span class="now-playing-playlist">{{p.playlistName}}</span>
-            {{#if ../isGM}}
-              <a class="stop-one" data-action="stopPlaying" data-playlist-id="{{p.playlistId}}" data-sound-id="{{p.soundId}}" title="Stop">
-                <i class="fas fa-stop"></i>
-              </a>
-            {{/if}}
+          <li class="now-playing-item">
+            <div class="now-playing-row">
+              <span class="now-playing-name" title="{{p.name}}">{{p.name}}</span>
+              <span class="now-playing-playlist">{{p.playlistName}}</span>
+              {{#if ../isGM}}
+                <a class="stop-one" data-action="stopPlaying" data-playlist-id="{{p.playlistId}}" data-sound-id="{{p.soundId}}" title="Stop">
+                  <i class="fas fa-stop"></i>
+                </a>
+              {{/if}}
+            </div>
+            <div class="now-playing-scrub-row">
+              {{#if ../isGM}}
+                <input type="range" class="scrub-bar" min="0" max="{{p.duration}}" value="{{p.currentTime}}" step="1"
+                       data-playlist-id="{{p.playlistId}}" data-sound-id="{{p.soundId}}">
+              {{else}}
+                <input type="range" class="scrub-bar" min="0" max="{{p.duration}}" value="{{p.currentTime}}" step="1"
+                       data-playlist-id="{{p.playlistId}}" data-sound-id="{{p.soundId}}" disabled>
+              {{/if}}
+              <span class="now-playing-time">{{p.currentTimeLabel}} / {{p.durationLabel}}</span>
+            </div>
           </li>
         {{/each}}
       </ul>

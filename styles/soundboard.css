@@ -48,10 +48,18 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
-  line-height: 1.25;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.simple-soundboard .soundboard-btn-label {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-align: center;
 }
 
@@ -115,12 +123,18 @@
 
 .simple-soundboard .soundboard-now-playing li {
   display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.15rem;
   font-size: 0.8rem;
-  padding: 0.15rem 0.3rem;
+  padding: 0.25rem 0.3rem;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
+}
+
+.simple-soundboard .now-playing-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .simple-soundboard .now-playing-name {
@@ -133,6 +147,31 @@
 .simple-soundboard .now-playing-playlist {
   opacity: 0.6;
   font-size: 0.7rem;
+}
+
+.simple-soundboard .now-playing-scrub-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.simple-soundboard .scrub-bar {
+  flex: 1;
+  height: 0.9rem;
+  cursor: pointer;
+}
+
+.simple-soundboard .scrub-bar:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.simple-soundboard .now-playing-time {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  white-space: nowrap;
+  min-width: 4.5rem;
+  text-align: right;
 }
 
 .simple-soundboard .stop-one {

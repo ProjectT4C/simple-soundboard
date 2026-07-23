@@ -84,18 +84,33 @@ export async function triggerLibrarySound(playlistId, soundId) {
   else await playlist.playSound(sound);
 }
 
+/** Format a number of seconds as "M:SS" for display. */
+export function formatTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) seconds = 0;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 /** Every sound currently playing, across every Playlist, tagged or not. */
 export function getAllPlayingSounds() {
   const records = [];
   for (const playlist of game.playlists.contents) {
     for (const sound of playlist.sounds.contents) {
       if (sound.playing) {
+        const currentTime = sound.sound?.currentTime ?? 0;
+        const duration = sound.sound?.duration ?? 0;
+
         records.push({
           playlistId: playlist.id,
           playlistName: playlist.name,
           soundId: sound.id,
           name: sound.name,
-          volume: sound.volume
+          volume: sound.volume,
+          currentTime,
+          duration,
+          currentTimeLabel: formatTime(currentTime),
+          durationLabel: formatTime(duration)
         });
       }
     }
@@ -119,6 +134,14 @@ export async function stopAllSounds() {
       if (sound.playing) await playlist.stopSound(sound);
     }
   }
+}
+
+/** GM-only: jump a currently-playing sound to a specific position, in seconds. */
+export async function seekLibrarySound(playlistId, soundId, offsetSeconds) {
+  if (!game.user.isGM) return;
+  const { sound } = findPlaylistSound(playlistId, soundId);
+  if (!sound?.sound) return;
+  await sound.sound.play({ offset: offsetSeconds, loop: sound.repeat, volume: sound.volume });
 }
 
 /** Fire a one-off SFX that isn't backed by any Playlist document. */
