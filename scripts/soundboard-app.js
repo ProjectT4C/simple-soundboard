@@ -11,11 +11,14 @@ import {
   getAllTaggedSounds,
   getAllQuickSounds,
   getAllTags,
+  getAllPlayingSounds,
   getPresets,
   getQuickSounds,
   findPlaylistSound,
   triggerLibrarySound,
   triggerQuickSound,
+  stopLibrarySound,
+  stopAllSounds,
   tagLibrarySound,
   tagQuickSound,
   upsertQuickSound,
@@ -40,6 +43,8 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
       editTags: SoundboardApp.prototype._onEditTags,
       addQuickSound: SoundboardApp.prototype._onAddQuickSound,
       deleteQuickSound: SoundboardApp.prototype._onDeleteQuickSound,
+      stopPlaying: SoundboardApp.prototype._onStopPlaying,
+      stopAllPlaying: SoundboardApp.prototype._onStopAllPlaying,
       savePreset: SoundboardApp.prototype._onSavePreset,
       recallPreset: SoundboardApp.prototype._onRecallPreset,
       deletePreset: SoundboardApp.prototype._onDeletePreset
@@ -69,6 +74,7 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
       sounds,
       quickSounds,
       presets,
+      playing: getAllPlayingSounds(),
       isGM: game.user.isGM
     };
   }
@@ -118,7 +124,7 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
       rejectClose: false
     });
 
-    if (result === null) return;
+    if (!result || result === "cancel") return;
     const tags = result.split(",").map((t) => t.trim()).filter(Boolean);
 
     if (quickId) await tagQuickSound(quickId, tags);
@@ -138,8 +144,8 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
           <input type="text" name="label" autofocus>
         </div>
         <div class="form-group">
-          <label>Audio file path</label>
-          <input type="text" name="path" placeholder="sounds/my-sfx.ogg">
+          <label>Audio file</label>
+          <file-picker name="path" type="audio"></file-picker>
         </div>`,
       buttons: [
         {
@@ -156,7 +162,7 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
       rejectClose: false
     });
 
-    if (!result || !result.label || !result.path) return;
+    if (!result || result === "cancel" || !result.label || !result.path) return;
 
     await upsertQuickSound({
       id: foundry.utils.randomID(),
@@ -172,6 +178,19 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
   async _onDeleteQuickSound(event, target) {
     if (!game.user.isGM) return;
     await deleteQuickSound(target.dataset.quickId);
+    this.render();
+  }
+
+  async _onStopPlaying(event, target) {
+    if (!game.user.isGM) return;
+    const { playlistId, soundId } = target.dataset;
+    await stopLibrarySound(playlistId, soundId);
+    this.render();
+  }
+
+  async _onStopAllPlaying() {
+    if (!game.user.isGM) return;
+    await stopAllSounds();
     this.render();
   }
 
@@ -197,7 +216,7 @@ export class SoundboardApp extends foundry.applications.api.HandlebarsApplicatio
       rejectClose: false
     });
 
-    if (!name) return;
+    if (!name || name === "cancel") return;
     await savePreset(name);
     this.render();
   }

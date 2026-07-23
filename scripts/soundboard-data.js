@@ -84,6 +84,43 @@ export async function triggerLibrarySound(playlistId, soundId) {
   else await playlist.playSound(sound);
 }
 
+/** Every sound currently playing, across every Playlist, tagged or not. */
+export function getAllPlayingSounds() {
+  const records = [];
+  for (const playlist of game.playlists.contents) {
+    for (const sound of playlist.sounds.contents) {
+      if (sound.playing) {
+        records.push({
+          playlistId: playlist.id,
+          playlistName: playlist.name,
+          soundId: sound.id,
+          name: sound.name,
+          volume: sound.volume
+        });
+      }
+    }
+  }
+  return records;
+}
+
+/** GM-only: stop one specific playing sound. */
+export async function stopLibrarySound(playlistId, soundId) {
+  if (!game.user.isGM) return;
+  const { playlist, sound } = findPlaylistSound(playlistId, soundId);
+  if (!playlist || !sound || !sound.playing) return;
+  await playlist.stopSound(sound);
+}
+
+/** GM-only: stop everything playing anywhere. */
+export async function stopAllSounds() {
+  if (!game.user.isGM) return;
+  for (const playlist of game.playlists.contents) {
+    for (const sound of playlist.sounds.contents) {
+      if (sound.playing) await playlist.stopSound(sound);
+    }
+  }
+}
+
 /** Fire a one-off SFX that isn't backed by any Playlist document. */
 export async function triggerQuickSound(quickSoundDef) {
   await foundry.audio.AudioHelper.play(

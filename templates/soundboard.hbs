@@ -41,6 +41,30 @@
     {{/each}}
   </div>
 
+  {{#if playing.length}}
+    <div class="soundboard-now-playing">
+      <div class="now-playing-header">
+        <span>Now Playing ({{playing.length}})</span>
+        {{#if isGM}}
+          <button type="button" class="stop-all" data-action="stopAllPlaying">Stop All</button>
+        {{/if}}
+      </div>
+      <ul>
+        {{#each playing as |p|}}
+          <li>
+            <span class="now-playing-name">{{p.name}}</span>
+            <span class="now-playing-playlist">{{p.playlistName}}</span>
+            {{#if ../isGM}}
+              <a class="stop-one" data-action="stopPlaying" data-playlist-id="{{p.playlistId}}" data-sound-id="{{p.soundId}}" title="Stop">
+                <i class="fas fa-stop"></i>
+              </a>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+
   {{#if isGM}}
     <div class="soundboard-footer">
       <button type="button" data-action="addQuickSound"><i class="fas fa-plus"></i> Quick Sound</button>

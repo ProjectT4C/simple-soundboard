@@ -41,11 +41,18 @@
 }
 
 .simple-soundboard .soundboard-btn {
+  box-sizing: border-box;
   width: 100%;
   min-height: 3rem;
+  padding: 0.4rem 1.5rem 0.4rem 0.5rem;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: center;
 }
 
 .simple-soundboard .soundboard-btn.playing {
@@ -77,6 +84,63 @@
 
 .simple-soundboard .edit-tags:hover,
 .simple-soundboard .delete-quick:hover {
+  opacity: 1;
+}
+
+.simple-soundboard .soundboard-now-playing {
+  flex-shrink: 0;
+  max-height: 8rem;
+  overflow-y: auto;
+  border-top: 1px solid var(--color-border-light-tertiary, #999);
+  padding-top: 0.35rem;
+}
+
+.simple-soundboard .now-playing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.simple-soundboard .soundboard-now-playing ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.simple-soundboard .soundboard-now-playing li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.simple-soundboard .now-playing-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.simple-soundboard .now-playing-playlist {
+  opacity: 0.6;
+  font-size: 0.7rem;
+}
+
+.simple-soundboard .stop-one {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.simple-soundboard .stop-one:hover {
   opacity: 1;
 }
 
